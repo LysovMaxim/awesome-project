@@ -1,21 +1,25 @@
-import { RegistrationScreen } from './src/Screens/RegistrationScreen';
+
+import { RegistrationScreen } from "./src/Screens/RegistrationScreen";
+import { useFonts } from 'expo-font';
+import { useCallback } from 'react';
+
+
 
 export default function App() {
 
-  return (
-    <RegistrationScreen/>
-    // <View style={styles.container}>
-    //   <Text>Open up App.js to start working on !</Text>
-    //   <StatusBar style="auto" />
-    // </View>
-  );
-}
+  const [fontsLoaded] = useFonts({
+    'Roboto-Medium': require('./src/assets/fonts/Roboto-Medium.ttf'),
+    'Roboto-Regular': require('./src/assets/fonts/Roboto-Regular.ttf'),
+  });
 
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     backgroundColor: '#fff',
-//     alignItems: 'center',
-//     justifyContent: 'center',
-//   },
-// });
+  const onLayoutRootView = useCallback(async () => {
+    if (fontsLoaded) {
+      await SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded]);
+
+  if (!fontsLoaded) {
+    return null;
+  }
+  return <RegistrationScreen />;
+}
