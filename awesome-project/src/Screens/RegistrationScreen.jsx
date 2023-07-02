@@ -11,21 +11,34 @@ import {
 } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 import Background from "../Components/Background";
+import { useState } from "react";
 
 export const RegistrationScreen = () => {
+  const [isName, setIsName] = useState(false);
+  const [isFocused, setIsFocused] = useState(false);
+  const [isPassword, setIsPassword] = useState(false);
+
+  const handleFocusName = () => setIsName(true);
+  const handleBlurName = () => setIsName(false);
+  const handleFocus = () => setIsFocused(true);
+  const handleBlur = () => setIsFocused(false);
+  const handleFocusPassword = () => setIsPassword(true);
+  const handleBlurPassword = () => setIsPassword(false);
+
   return (
-            <View
-            style={{
-                flex: 1,
-                backgroundColor: '#fff',
-                alignItems: 'center',
-                justifyContent: 'center',
-            }}>
-          <Background/>
-        <KeyboardAvoidingView
-          behavior={Platform.OS === "ios" ? "padding" : "height"}
-          style={styles.container}
-          keyboardVerticalOffset={-170}
+    <View
+      style={{
+        flex: 1,
+        backgroundColor: "#fff",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
+      <Background />
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={styles.container}
+        keyboardVerticalOffset={-170}
       >
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <View style={styles.registration}>
@@ -34,12 +47,53 @@ export const RegistrationScreen = () => {
               <AntDesign name="plus" size={20} color="#FF6C00" />
             </TouchableOpacity>
             <Text style={styles.title}>Реєстрація</Text>
-            <TextInput style={styles.inputLogin} placeholder="Логін" />
             <TextInput
-              style={styles.inputEmail}
+              style={{
+                marginTop: 32,
+                backgroundColor: "#F6F6F6",
+                borderWidth: 1,
+                borderColor: "#E8E8E8",
+                borderRadius: 8,
+                width: "100%",
+                height: 50,
+                padding: 16,
+                borderColor: !isName ? "#E8E8E8" : "#FF6C00",
+              }}
+              onFocus={handleFocusName}
+              onBlur={handleBlurName}
+              placeholder="Логін"
+            />
+            <TextInput
+              style={{
+                marginTop: 16,
+                backgroundColor: "#F6F6F6",
+                borderWidth: 1,
+                borderRadius: 8,
+                width: "100%",
+                height: 50,
+                padding: 16,
+                borderColor: !isFocused ? "#E8E8E8" : "#FF6C00",
+              }}
+              onFocus={handleFocus}
+              onBlur={handleBlur}
               placeholder="Адреса електронної пошти"
             />
-            <TextInput style={styles.inputPassword} placeholder="Пароль" />
+            <TextInput
+              style={{
+                marginTop: 16,
+                backgroundColor: "#F6F6F6",
+                borderWidth: 1,
+                borderColor: "#E8E8E8",
+                borderRadius: 8,
+                width: "100%",
+                height: 50,
+                padding: 16,
+                borderColor: !isPassword ? "#E8E8E8" : "#FF6C00",
+              }}
+              onFocus={handleFocusPassword}
+              onBlur={handleBlurPassword}
+              placeholder="Пароль"
+            />
             <TouchableOpacity>
               <Text style={styles.btnShow}>Показати</Text>
             </TouchableOpacity>
@@ -49,10 +103,9 @@ export const RegistrationScreen = () => {
             <TouchableOpacity>
               <Text style={styles.come}>Вже є акаунт? Увійти</Text>
             </TouchableOpacity>
-            </View>
-           </TouchableWithoutFeedback>
-        </KeyboardAvoidingView>
-     
+          </View>
+        </TouchableWithoutFeedback>
+      </KeyboardAvoidingView>
     </View>
   );
 };
@@ -60,7 +113,7 @@ export const RegistrationScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    width: '100%'
+    width: "100%",
   },
   image: {
     width: "100%",
@@ -68,26 +121,23 @@ const styles = StyleSheet.create({
   },
   registration: {
     height: "100%",
-    alignItems: 'center',
-    width: '100%',
+    alignItems: "center",
+    width: "100%",
     marginTop: 263,
     backgroundColor: "#FFFFFF",
     borderTopLeftRadius: 25,
     borderTopRightRadius: 25,
-    paddingBottom: 159, 
+    paddingBottom: 159,
     paddingLeft: 16,
     paddingRight: 16,
-  
-
   },
   title: {
     fontFamily: "Roboto-Medium",
     fontSize: 30,
     lineHeight: 35,
-    // textAlign: "center",
     letterSpacing: 0.01,
     color: "#212121",
-    marginTop:92
+    marginTop: 92,
   },
   photoUser: {
     position: "absolute",
@@ -112,43 +162,42 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  inputLogin: {
-    marginTop: 32,
-    backgroundColor: "#F6F6F6",
-    borderWidth: 1,
-    borderColor: "#E8E8E8",
-    borderRadius: 8,
-    width: "100%",
-    height: 50,
-    padding: 16,
-  },
-  inputEmail: {
-    marginTop: 16,
-    backgroundColor: "#F6F6F6",
-    borderWidth: 1,
-    borderColor: "#E8E8E8",
-    borderRadius: 8,
-    width: "100%",
-    height: 50,
-    padding: 16,
-  },
-  inputPassword: {
-    marginTop: 16,
-    backgroundColor: "#F6F6F6",
-    borderWidth: 1,
-    borderColor: "#E8E8E8",
-    borderRadius: 8,
-    width: "100%",
-    height: 50,
-    padding: 16,
-  },
+  // inputLogin: {
+  //   marginTop: 32,
+  //   backgroundColor: "#F6F6F6",
+  //   borderWidth: 1,
+  //   borderColor: "#E8E8E8",
+  //   borderRadius: 8,
+  //   width: "100%",
+  //   height: 50,
+  //   padding: 16,
+  // },
+  // inputEmail: {
+  //   marginTop: 16,
+  //   backgroundColor: "#F6F6F6",
+  //   borderWidth: 1,
+  //   borderRadius: 8,
+  //   width: "100%",
+  //   height: 50,
+  //   padding: 16,
+  // },
+  // inputPassword: {
+  //   marginTop: 16,
+  //   backgroundColor: "#F6F6F6",
+  //   borderWidth: 1,
+  //   borderColor: "#E8E8E8",
+  //   borderRadius: 8,
+  //   width: "100%",
+  //   height: 50,
+  //   padding: 16,
+  // },
   btnShow: {
     position: "absolute",
     bottom: 16,
     right: -165,
   },
   btn: {
-    width:"100%",
+    width: "100%",
     height: 51,
     marginTop: 43,
     backgroundColor: "#FF6C00",

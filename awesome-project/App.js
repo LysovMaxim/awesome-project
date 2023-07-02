@@ -1,7 +1,9 @@
-// import { RegistrationScreen } from "./src/Screens/RegistrationScreen";
+import { RegistrationScreen } from "./src/Screens/RegistrationScreen";
+import { LoginScreen } from "./src/Screens/LoginScreen";
+import { PostScreen } from "./src/Screens/PostsScreen";
 import { useFonts } from 'expo-font';
 import { useCallback } from 'react';
-import { LoginScreen } from "./src/Screens/LoginScreen";
+
 
 
 
@@ -21,5 +23,5 @@ export default function App() {
   if (!fontsLoaded) {
     return null;
   }
-  return <LoginScreen />;
+  return <RegistrationScreen />;
 }
