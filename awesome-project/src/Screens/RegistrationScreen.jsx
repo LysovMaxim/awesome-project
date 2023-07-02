@@ -1,42 +1,58 @@
 import {
-  ImageBackground,
+  KeyboardAvoidingView,
   View,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
-  Image,
-  Platform
+  Platform,
+  TouchableWithoutFeedback,
+  Keyboard,
 } from "react-native";
-import { AntDesign } from '@expo/vector-icons';
+import { AntDesign } from "@expo/vector-icons";
+import Background from "../Components/Background";
 
 export const RegistrationScreen = () => {
   return (
-    <View style={styles.container}>
-      <ImageBackground
-        source={require("../pictures/PhotoBG.png")}
-        style={styles.image}
+            <View
+            style={{
+                flex: 1,
+                backgroundColor: '#fff',
+                alignItems: 'center',
+                justifyContent: 'center',
+            }}>
+          <Background/>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          style={styles.container}
+          keyboardVerticalOffset={-170}
       >
-        <View style={styles.registration}>
-          <View style={styles.photoUser}></View>
-          <TouchableOpacity style={styles.btnPhotoAdd}>
-            <AntDesign name="plus" size={20} color="#FF6C00" />
-          </TouchableOpacity>
-          <Text style={styles.title}>Реєстрація</Text>
-          <TextInput style={styles.inputLogin} placeholder="Логін"/>
-          <TextInput style={styles.inputEmail} placeholder="Адреса електронної пошти"/>
-          <TextInput style={styles.inputPassword} placeholder="Пароль" />
-          <TouchableOpacity>
-            <Text style={styles.btnShow}>Показати</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.btn}>
-            <Text style={styles.btnTitle}> Зареєстуватися </Text>
-          </TouchableOpacity>
-          <TouchableOpacity>
-            <Text style={styles.come}>Вже є акаунт? Увійти</Text>
-          </TouchableOpacity>
-        </View>
-      </ImageBackground>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <View style={styles.registration}>
+            <View style={styles.photoUser}></View>
+            <TouchableOpacity style={styles.btnPhotoAdd}>
+              <AntDesign name="plus" size={20} color="#FF6C00" />
+            </TouchableOpacity>
+            <Text style={styles.title}>Реєстрація</Text>
+            <TextInput style={styles.inputLogin} placeholder="Логін" />
+            <TextInput
+              style={styles.inputEmail}
+              placeholder="Адреса електронної пошти"
+            />
+            <TextInput style={styles.inputPassword} placeholder="Пароль" />
+            <TouchableOpacity>
+              <Text style={styles.btnShow}>Показати</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.btn}>
+              <Text style={styles.btnTitle}> Зареєстуватися </Text>
+            </TouchableOpacity>
+            <TouchableOpacity>
+              <Text style={styles.come}>Вже є акаунт? Увійти</Text>
+            </TouchableOpacity>
+            </View>
+           </TouchableWithoutFeedback>
+        </KeyboardAvoidingView>
+     
     </View>
   );
 };
@@ -44,38 +60,43 @@ export const RegistrationScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    width: '100%'
   },
   image: {
-    flex: 1,
+    width: "100%",
+    position: "absolute",
   },
   registration: {
-    width: "100%",
     height: "100%",
-    left: 0,
-    top: 263,
+    alignItems: 'center',
+    width: '100%',
+    marginTop: 263,
     backgroundColor: "#FFFFFF",
-    borderRadius: 25,
-    paddingTop: 92,
-    paddingBottom: 78,
+    borderTopLeftRadius: 25,
+    borderTopRightRadius: 25,
+    paddingBottom: 159, 
     paddingLeft: 16,
     paddingRight: 16,
+  
+
   },
   title: {
     fontFamily: "Roboto-Medium",
     fontSize: 30,
     lineHeight: 35,
-    textAlign: "center",
+    // textAlign: "center",
     letterSpacing: 0.01,
     color: "#212121",
+    marginTop:92
   },
   photoUser: {
     position: "absolute",
     left: "39%",
-    top:-60,
+    top: -60,
     width: 120,
     height: 120,
     backgroundColor: "#F6F6F6",
-    borderRadius: 16
+    borderRadius: 16,
   },
   btnPhotoAdd: {
     position: "absolute",
@@ -87,9 +108,9 @@ const styles = StyleSheet.create({
     height: 25,
     left: Platform.OS === "ios" ? "67%" : "69%",
     top: 20,
-     flex: 1,
-  alignItems: "center",
-  justifyContent: "center",
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
   },
   inputLogin: {
     marginTop: 32,
@@ -123,10 +144,11 @@ const styles = StyleSheet.create({
   },
   btnShow: {
     position: "absolute",
-    bottom:16,
-    right:16
+    bottom: 16,
+    right: -165,
   },
   btn: {
+    width:"100%",
     height: 51,
     marginTop: 43,
     backgroundColor: "#FF6C00",
@@ -142,8 +164,7 @@ const styles = StyleSheet.create({
   },
   come: {
     fontFamily: "Roboto-Regular",
-    textAlign: "center",
     fontSize: 16,
     marginTop: 16,
-  }
+  },
 });

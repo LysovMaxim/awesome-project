@@ -1,0 +1,13 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "npm",
+			"script": "android",
+			"path": "awesome-project",
+			"problemMatcher": [],
+			"label": "npm: android - awesome-project",
+			"detail": "expo start --android"
+		}
+	]
+}
