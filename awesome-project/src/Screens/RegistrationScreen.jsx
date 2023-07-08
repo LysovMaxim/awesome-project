@@ -17,6 +17,10 @@ export const RegistrationScreen = () => {
   const [isName, setIsName] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
   const [isPassword, setIsPassword] = useState(false);
+  const [login, setLogin] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(true);
 
   const handleFocusName = () => setIsName(true);
   const handleBlurName = () => setIsName(false);
@@ -25,22 +29,38 @@ export const RegistrationScreen = () => {
   const handleFocusPassword = () => setIsPassword(true);
   const handleBlurPassword = () => setIsPassword(false);
 
+  const onData = (event) => {
+    event.preventDefault();
+    console.log(`login: ${login}`, `email: ${email}`, `password: ${password}`);
+    setShowPassword(true);
+    reset();
+  };
+  const reset = () => {
+    setLogin("");
+    setEmail("");
+    setPassword("");
+  };
+
+  const getPassword = () => {
+    if (password !== "") setShowPassword(false);
+  };
+
   return (
-    <View
-      style={{
-        flex: 1,
-        backgroundColor: "#fff",
-        alignItems: "center",
-        justifyContent: "center",
-      }}
-    >
-      <Background />
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={styles.container}
-        keyboardVerticalOffset={-170}
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: "#fff",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
       >
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <Background />
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          style={styles.container}
+          keyboardVerticalOffset={-130}
+        >
           <View style={styles.registration}>
             <View style={styles.photoUser}></View>
             <TouchableOpacity style={styles.btnPhotoAdd}>
@@ -59,6 +79,8 @@ export const RegistrationScreen = () => {
                 padding: 16,
                 borderColor: !isName ? "#E8E8E8" : "#FF6C00",
               }}
+              value={login}
+              onChangeText={setLogin}
               onFocus={handleFocusName}
               onBlur={handleBlurName}
               placeholder="Логін"
@@ -74,6 +96,9 @@ export const RegistrationScreen = () => {
                 padding: 16,
                 borderColor: !isFocused ? "#E8E8E8" : "#FF6C00",
               }}
+              keyboardType="email-address"
+              value={email}
+              onChangeText={setEmail}
               onFocus={handleFocus}
               onBlur={handleBlur}
               placeholder="Адреса електронної пошти"
@@ -90,23 +115,30 @@ export const RegistrationScreen = () => {
                 padding: 16,
                 borderColor: !isPassword ? "#E8E8E8" : "#FF6C00",
               }}
+              secureTextEntry={showPassword}
+              value={password}
+              onChangeText={setPassword}
               onFocus={handleFocusPassword}
               onBlur={handleBlurPassword}
               placeholder="Пароль"
             />
             <TouchableOpacity>
-              <Text style={styles.btnShow}>Показати</Text>
+              <Text style={styles.btnShow} onPress={getPassword}>
+                Показати
+              </Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.btn}>
-              <Text style={styles.btnTitle}> Зареєстуватися </Text>
+              <Text style={styles.btnTitle} onPress={onData}>
+                Зареєстуватися
+              </Text>
             </TouchableOpacity>
             <TouchableOpacity>
               <Text style={styles.come}>Вже є акаунт? Увійти</Text>
             </TouchableOpacity>
           </View>
-        </TouchableWithoutFeedback>
-      </KeyboardAvoidingView>
-    </View>
+        </KeyboardAvoidingView>
+      </View>
+    </TouchableWithoutFeedback>
   );
 };
 
