@@ -20,7 +20,7 @@ export const PostScreen = () => {
           <Text style={styles.avtarEmail}>email@example.com</Text>
         </View>
       </View>
-      <View style={styles.menu}>
+      {/* <View style={styles.menu}>
         <TouchableOpacity style={styles.grid}>
           <Ionicons name="md-grid-outline" size={24} color="#212121" />
         </TouchableOpacity>
@@ -30,7 +30,7 @@ export const PostScreen = () => {
         <TouchableOpacity style={styles.user}>
           <Feather name="user" size={24} color="#212121" />
         </TouchableOpacity>
-      </View>
+      </View> */}
     </>
   );
 };
@@ -81,23 +81,23 @@ const styles = StyleSheet.create({
 
     fontWeight: 400,
   },
-  menu: {
-    flexDirection: "row",
-    justifyContent: "center",
-    paddingTop: 9,
-    alignItems: "baseline",
-    gap: 39,
-    borderTopWidth: 1,
-    borderTopColor: "#b3b3b3",
-    top: 540,
-    height: 83,
-  },
-  plus: {
-    width: 70,
-    height: 40,
-    backgroundColor: "#FF6C00",
-    borderRadius: 100,
-    justifyContent: "center",
-    alignItems: "center",
-  },
+  // menu: {
+  //   flexDirection: "row",
+  //   justifyContent: "center",
+  //   paddingTop: 9,
+  //   alignItems: "baseline",
+  //   gap: 39,
+  //   borderTopWidth: 1,
+  //   borderTopColor: "#b3b3b3",
+  //   top: 540,
+  //   height: 83,
+  // },
+  // plus: {
+  //   width: 70,
+  //   height: 40,
+  //   backgroundColor: "#FF6C00",
+  //   borderRadius: 100,
+  //   justifyContent: "center",
+  //   alignItems: "center",
+  // },
 });

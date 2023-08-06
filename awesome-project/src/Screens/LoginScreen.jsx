@@ -12,8 +12,11 @@ import {
 // import { AntDesign } from "@expo/vector-icons";
 import Background from "../Components/Background";
 import { useState } from "react";
+import { useNavigation } from '@react-navigation/native';
 
 export const LoginScreen = () => {
+const navigation = useNavigation();
+
   const [isFocused, setIsFocused] = useState(false);
   const [isPassword, setIsPassword] = useState(false);
   const [email, setEmail] = useState("");
@@ -29,7 +32,8 @@ export const LoginScreen = () => {
     event.preventDefault();
     console.log(`email: ${email}`, `password: ${password}`);
     setShowPassword(true);
-    reset();
+      reset();
+      navigation.navigate("Home")
   };
   const reset = () => {
     setEmail("");
@@ -104,7 +108,7 @@ export const LoginScreen = () => {
               <Text style={styles.btnTitle} onPress={onData}> Увійти </Text>
             </TouchableOpacity>
             <TouchableOpacity>
-              <Text style={styles.come}>Немає акаунту? Зареєструватися</Text>
+              <Text style={styles.come} onPress={() => navigation.navigate("Registration")}>Немає акаунту? Зареєструватися</Text>
             </TouchableOpacity>
           </View>
         

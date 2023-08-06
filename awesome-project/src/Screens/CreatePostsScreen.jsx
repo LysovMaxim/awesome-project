@@ -6,13 +6,15 @@ import {
   TextInput,
 } from "react-native";
 import { FontAwesome, AntDesign, Feather } from "@expo/vector-icons";
+import { useNavigation } from '@react-navigation/native';
 
 export const CreatePostsScreen = () => {
+  const navigation = useNavigation();
   return (
     <>
       <View style={styles.header}>
         <Text style={styles.registr}>Створити публікацію</Text>
-        <TouchableOpacity style={styles.back}>
+        <TouchableOpacity style={styles.back} onPress={() => navigation.goBack()}>
           <AntDesign name="arrowleft" size={24} color="#BDBDBD" />
         </TouchableOpacity>
       </View>
@@ -141,6 +143,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#F6F6F6",
     borderRadius: 100,
     alignSelf: "center",
-    marginTop: 90,
+    marginTop: 50,
   },
 });

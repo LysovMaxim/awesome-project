@@ -90,7 +90,7 @@ export const ProfileScreen = () => {
               </View>
             ))}
           </ScrollView>
-          <View style={styles.menu}>
+          {/* <View style={styles.menu}>
             <TouchableOpacity style={styles.grid}>
               <Ionicons name="md-grid-outline" size={24} color="#212121" />
             </TouchableOpacity>
@@ -100,7 +100,7 @@ export const ProfileScreen = () => {
             <TouchableOpacity style={styles.plus}>
               <AntDesign name="plus" size={24} color="#212121" />
             </TouchableOpacity>
-          </View>
+          </View> */}
         </View>
       </View>
     </View>
@@ -199,23 +199,23 @@ const styles = StyleSheet.create({
     fontFamily: "Roboto-Regular",
     fontSize: 16,
   },
-  menu: {
-    flexDirection: "row",
-    justifyContent: "center",
-    paddingTop: 9,
-    alignItems: "baseline",
-    gap: 39,
-    borderTopWidth: 1,
-    borderTopColor: "#b3b3b3",
-    top: 20,
-    height: 83,
-  },
-  user: {
-    width: 70,
-    height: 40,
-    backgroundColor: "#FF6C00",
-    borderRadius: 100,
-    justifyContent: "center",
-    alignItems: "center",
-  },
+  // menu: {
+  //   flexDirection: "row",
+  //   justifyContent: "center",
+  //   paddingTop: 9,
+  //   alignItems: "baseline",
+  //   gap: 39,
+  //   borderTopWidth: 1,
+  //   borderTopColor: "#b3b3b3",
+  //   top: 20,
+  //   height: 83,
+  // },
+  // user: {
+  //   width: 70,
+  //   height: 40,
+  //   backgroundColor: "#FF6C00",
+  //   borderRadius: 100,
+  //   justifyContent: "center",
+  //   alignItems: "center",
+  // },
 });
