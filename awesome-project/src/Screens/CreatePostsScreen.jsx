@@ -4,27 +4,63 @@ import {
   Text,
   TouchableOpacity,
   TextInput,
+  Image,
 } from "react-native";
 import { FontAwesome, AntDesign, Feather } from "@expo/vector-icons";
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation } from "@react-navigation/native";
+import { useState } from "react";
+import { Camera } from "expo-camera";
+import * as MediaLibrary from "expo-media-library";
 
 export const CreatePostsScreen = () => {
   const navigation = useNavigation();
+
+  const [photo, setPhoto] = useState(null);
+  const [cameraRef, setCameraRef] = useState(null);
+
   return (
     <>
       <View style={styles.header}>
         <Text style={styles.registr}>Створити публікацію</Text>
-        <TouchableOpacity style={styles.back} onPress={() => navigation.goBack()}>
+        <TouchableOpacity
+          style={styles.back}
+          onPress={() => navigation.goBack()}
+        >
           <AntDesign name="arrowleft" size={24} color="#BDBDBD" />
         </TouchableOpacity>
       </View>
       <View style={styles.container}>
-        <View style={styles.post}>
-          <TouchableOpacity style={styles.addPhoto}>
+        <Camera
+          style={styles.post}
+          type={Camera.Constants.Type.back}
+          ref={setCameraRef}
+        >
+          <View style={{ position: "relative" }}>
+            <Image
+              source={{ uri: photo }}
+              style={{ height: 240, width: 343, zIndex: 1 }}
+            />
+          </View>
+        </Camera>
+        {!photo ? (
+          <TouchableOpacity
+            style={styles.addPhoto}
+            onPress={async () => {
+              if (cameraRef) {
+                const { uri } = await cameraRef.takePictureAsync();
+                setPhoto(uri);
+                await MediaLibrary.createAssetAsync(uri);
+              }
+            }}
+          >
             <FontAwesome name="camera" size={24} color="#BDBDBD" />
           </TouchableOpacity>
-        </View>
-        <Text style={styles.loadingPhoto}>Завантажте фото</Text>
+        ) : null}
+        {!photo ? (
+          <Text style={styles.loadingPhoto}>Завантажте фото</Text>
+        ) : (
+          <Text style={styles.loadingPhoto}>Редагувати фото</Text>
+        )}
         <TextInput
           style={styles.name}
           placeholder="Назва..."
@@ -91,6 +127,8 @@ const styles = StyleSheet.create({
     height: 60,
     backgroundColor: "#FFF",
     borderRadius: 100,
+    left: 140,
+    bottom: 120,
   },
   loadingPhoto: {
     marginTop: 38,
