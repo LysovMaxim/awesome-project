@@ -2,6 +2,7 @@ import { RegistrationScreen } from "./src/Screens/RegistrationScreen";
 import { LoginScreen } from "./src/Screens/LoginScreen";
 import { CommentsScreen } from "./src/Screens/CommentsScreen";
 import { Home } from "./src/Screens/Home";
+import { MapScreen } from "./src/Screens/MapScreen";
 import { useFonts } from "expo-font";
 import { useCallback } from "react";
 import "react-native-gesture-handler";
@@ -42,6 +43,16 @@ export default function App() {
           name="Home"
           options={{ headerShown: false }}
           component={Home}
+        />
+        <MainStack.Screen
+          name="CommentsScreen"
+          options={{ headerShown: false }}
+          component={CommentsScreen}
+        />
+          <MainStack.Screen
+          name="MapScreen"
+          options={{ headerShown: false }}
+          component={MapScreen}
         />
       </MainStack.Navigator>
     </NavigationContainer>

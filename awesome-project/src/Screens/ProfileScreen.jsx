@@ -13,6 +13,7 @@ import avatarProfil from "../../src/pictures/avtar-profil.png";
 import forest from "../pictures/forest.png";
 import sky from "../pictures/sky.png";
 import house from "../pictures/house.png";
+import { useNavigation } from "@react-navigation/native";
 
 const POSTS = [
   {
@@ -22,6 +23,10 @@ const POSTS = [
     comments: "8",
     like: "153",
     location: "Ukraine",
+    data: {
+      latitude: 50.4547,
+      longitude: 30.5238,
+    },
   },
   {
     id: "2",
@@ -30,6 +35,10 @@ const POSTS = [
     comments: "3",
     like: "200",
     location: "Ukraine",
+    data: {
+      latitude: 50.4547,
+      longitude: 30.5238,
+    },
   },
   {
     id: "3",
@@ -38,10 +47,31 @@ const POSTS = [
     comments: "50",
     like: "200",
     location: "Italy",
+    data: {
+      latitude: 47.083,
+      longitude: 12.183,
+    },
   },
 ];
 
 export const ProfileScreen = () => {
+  const navigation = useNavigation();
+
+  const goToCommentsScreen = () => {
+    navigation.navigate("CommentsScreen");
+  };
+
+  const onMap = (data) => {
+    if (!data) {
+      alert("not coords");
+      return;
+    }
+    navigation.navigate("MapScreen", {
+      latitude: data.latitude,
+      longitude: data.longitude,
+    });
+  };
+
   return (
     <View
       style={{
@@ -70,37 +100,30 @@ export const ProfileScreen = () => {
                 <Image source={post.photo} />
                 <Text style={styles.namePost}>{post.name}</Text>
                 <View style={styles.informPost}>
-                  <TouchableOpacity>
+                  <TouchableOpacity onPress={goToCommentsScreen}>
                     <Ionicons name="chatbubble" size={24} color="#FF6C00" />
                   </TouchableOpacity>
-
                   <Text style={styles.comments}>{post.comments}</Text>
                   <TouchableOpacity>
                     <Feather name="thumbs-up" size={24} color="#FF6C00" />
                   </TouchableOpacity>
                   <Text style={styles.like}>{post.like}</Text>
-                  <Feather
-                    style={styles.iconMap}
-                    name="map-pin"
-                    size={24}
-                    color="#BDBDBD"
-                  />
-                  <Text style={styles.location}>{post.location}</Text>
+                  <TouchableOpacity
+                    style={styles.map}
+                    onPress={() => onMap(post.data)}
+                  >
+                    <Feather
+                      style={styles.iconMap}
+                      name="map-pin"
+                      size={24}
+                      color="#BDBDBD"
+                    />
+                    <Text style={styles.location}>{post.location}</Text>
+                  </TouchableOpacity>
                 </View>
               </View>
             ))}
           </ScrollView>
-          {/* <View style={styles.menu}>
-            <TouchableOpacity style={styles.grid}>
-              <Ionicons name="md-grid-outline" size={24} color="#212121" />
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.user}>
-              <Feather name="user" size={24} color="#fff" />
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.plus}>
-              <AntDesign name="plus" size={24} color="#212121" />
-            </TouchableOpacity>
-          </View> */}
         </View>
       </View>
     </View>
@@ -194,28 +217,13 @@ const styles = StyleSheet.create({
     marginLeft: 6,
     marginRight: "auto",
   },
+
+  map: {
+    flexDirection: "row",
+  },
   location: {
     marginLeft: 6,
     fontFamily: "Roboto-Regular",
     fontSize: 16,
   },
-  // menu: {
-  //   flexDirection: "row",
-  //   justifyContent: "center",
-  //   paddingTop: 9,
-  //   alignItems: "baseline",
-  //   gap: 39,
-  //   borderTopWidth: 1,
-  //   borderTopColor: "#b3b3b3",
-  //   top: 20,
-  //   height: 83,
-  // },
-  // user: {
-  //   width: 70,
-  //   height: 40,
-  //   backgroundColor: "#FF6C00",
-  //   borderRadius: 100,
-  //   justifyContent: "center",
-  //   alignItems: "center",
-  // },
 });

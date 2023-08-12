@@ -8,15 +8,57 @@ import {
 } from "react-native";
 import { FontAwesome, AntDesign, Feather } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Camera } from "expo-camera";
 import * as MediaLibrary from "expo-media-library";
+import * as Location from "expo-location";
 
 export const CreatePostsScreen = () => {
   const navigation = useNavigation();
 
   const [photo, setPhoto] = useState(null);
   const [cameraRef, setCameraRef] = useState(null);
+  const [location, setLocation] = useState(null);
+  const [locationTitle, setLocationTitle] = useState("");
+  const [isButtonDisabled, setIsButtonDisabled] = useState(true);
+  const [namePost, setNamePost] = useState("");
+
+  useEffect(() => {
+    setIsButtonDisabled(checkButtonDisabled());
+  });
+
+  useEffect(() => {
+    (async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        console.log("Permission to access location was denied");
+      }
+
+      let location = await Location.getCurrentPositionAsync({});
+      const coords = {
+        latitude: location.coords.latitude,
+        longitude: location.coords.longitude,
+      };
+      setLocation(coords);
+    })();
+  }, []);
+
+  const checkButtonDisabled = () => {
+    return namePost === "" || locationTitle === "" || photo === null;
+  };
+
+  const publication = () => {
+    navigation.navigate("PostScreen");
+    deleteState();
+  };
+
+  const deleteState = () => {
+    setNamePost("");
+    setLocation("");
+    setLocationTitle("");
+    setPhoto(null);
+    setIsButtonDisabled(true);
+  };
 
   return (
     <>
@@ -38,7 +80,7 @@ export const CreatePostsScreen = () => {
           <View style={{ position: "relative" }}>
             <Image
               source={{ uri: photo }}
-              style={{ height: 240, width: 343, zIndex: 1 }}
+              style={{ height: 240, width: 343 }}
             />
           </View>
         </Camera>
@@ -65,11 +107,15 @@ export const CreatePostsScreen = () => {
           style={styles.name}
           placeholder="Назва..."
           placeholderTextColor="#BDBDBD"
+          value={namePost}
+          onChangeText={setNamePost}
         />
         <TextInput
           style={styles.terrain}
           placeholder="Місцевість..."
           placeholderTextColor="#BDBDBD"
+          value={locationTitle}
+          onChangeText={setLocationTitle}
         />
         <Feather
           style={styles.iconMap}
@@ -77,10 +123,24 @@ export const CreatePostsScreen = () => {
           size={24}
           color="#BDBDBD"
         />
-        <TouchableOpacity style={styles.btn}>
-          <Text style={styles.btnTitle}>Опубліковати</Text>
+        <TouchableOpacity
+          onPress={publication}
+          style={[
+            styles.btn,
+            { backgroundColor: isButtonDisabled ? "#F6F6F6" : "#FF6C00" },
+          ]}
+          disabled={isButtonDisabled}
+        >
+          <Text
+            style={[
+              styles.btnTitle,
+              { color: isButtonDisabled ? "#BDBDBD" : "white" },
+            ]}
+          >
+            Опубліковати
+          </Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.delete}>
+        <TouchableOpacity style={styles.delete} onPress={deleteState}>
           <Feather name="trash-2" size={24} color="#BDBDBD" />
         </TouchableOpacity>
       </View>
@@ -128,7 +188,8 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFF",
     borderRadius: 100,
     left: 140,
-    bottom: 120,
+    bottom: 470,
+    position: "absolute",
   },
   loadingPhoto: {
     marginTop: 38,
@@ -155,7 +216,7 @@ const styles = StyleSheet.create({
   },
   iconMap: {
     position: "absolute",
-    top: 425,
+    top: 428,
     left: 0,
   },
   btn: {

@@ -12,6 +12,7 @@ import rectangle from "../pictures/rectangle.png";
 import ellipse from "../pictures/ellipse.png";
 import ellipse2 from "../pictures/ellipse2.png";
 import { useState } from "react";
+import { useNavigation } from "@react-navigation/native";
 
 const COURSES = [
   {
@@ -42,11 +43,14 @@ const COURSES = [
 
 export const CommentsScreen = () => {
   const [courses, setCourses] = useState(COURSES);
+
+  const navigation = useNavigation();
+
   return (
     <>
       <View style={styles.header}>
         <Text style={styles.registr}>Коментарі</Text>
-        <TouchableOpacity style={styles.back}>
+        <TouchableOpacity style={styles.back} onPress={() => navigation.goBack()}>
           <AntDesign name="arrowleft" size={24} color="#BDBDBD" />
         </TouchableOpacity>
       </View>
