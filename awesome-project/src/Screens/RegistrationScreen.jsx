@@ -15,20 +15,19 @@ import Background from "../Components/Background";
 import { useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { auth } from "../../firebase/config";
-import {
-  createUserWithEmailAndPassword,
-  updateProfile,
-} from "firebase/auth";
+import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { useDispatch } from "react-redux";
 import { addUser } from "../../redux/sliceAuth";
 import * as ImagePicker from "expo-image-picker";
 import { writeDataToFirestore } from "../../firebase/frestore";
+import { ref, getDownloadURL, uploadBytes } from "firebase/storage";
+import {storage} from "../../firebase/config"
 
 const initialState = {
   email: "",
   password: "",
   login: "",
-  // imageUser: null,
+  imageUser: null,
 };
 
 export const RegistrationScreen = () => {
@@ -40,7 +39,7 @@ export const RegistrationScreen = () => {
   const [isPassword, setIsPassword] = useState(false);
   const [showPassword, setShowPassword] = useState(true);
   const [state, setState] = useState(initialState);
-  const [imageUser, setImageUser] = useState(null);
+  const [imageUser, setImageUser] = useState("");
 
   const handleFocusName = () => setIsName(true);
   const handleBlurName = () => setIsName(false);
@@ -49,66 +48,81 @@ export const RegistrationScreen = () => {
   const handleFocusPassword = () => setIsPassword(true);
   const handleBlurPassword = () => setIsPassword(false);
 
+
+    const addPhotoUser = async () => {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+    if (!result.canceled) {
+      setImageUser(result.assets[0].uri);
+    }
+  };
+
+  const uploadImageToServer = async () => {
+
+    if (imageUser) {
+      try {
+        const response = await fetch(imageUser);
+
+        const file = await response.blob();
+        const uniquePostId = Date.now().toString()
+        const imageRef = ref(
+          storage,
+          `profileImageUser/${uniquePostId}/${file.data.name}`
+        );
+        
+        await uploadBytes(imageRef, file);
+        const downloadeURL = await getDownloadURL(imageRef);
+        // setImageUser(downloadeURL);
+        setState({...state,imageUser: downloadeURL })
+        onData()
+      } catch (error) {
+        console.warn("uploadImageToServer", error);
+      }
+    }
+  };
+
   const onData = async () => {
     await createUserWithEmailAndPassword(
       auth,
       state.email,
-      state.password,
+      state.password
       // state.imageUser
     );
-    
-      try {
-        const user = await auth.currentUser;
-        await updateProfile(user, {
-          displayName: state.login,
-          photoURL: imageUser,
-        });
-        const { displayName, uid, photoURL } = user;
-        const updatedProfile = {
-          login: displayName,
-          userId: uid,
-          imageUser: photoURL,
-          password: state.password,
-          email: state.email,
-          userRegister: false,
-        };
-        dispatch(addUser(updatedProfile));
-        writeDataToFirestore(updatedProfile);
-        setShowPassword(true);
-        // dispatch(addUser(state));
-        navigation.navigate("Login");
-      } catch (error) {
-        throw error;
-      }
-    
+    // console.log(imageUser)
+    try {
+      const user = await auth.currentUser;
+      await updateProfile(user, {
+        displayName: state.login,
+        photoURL: state.imageUser,
+      });
+      const { displayName, uid, photoURL } = user;
+      console.log(photoURL)
+      const updatedProfile = {
+        login: displayName,
+        userId: uid,
+        imageUser: photoURL,
+        password: state.password,
+        email: state.email,
+        userRegister: false,
+      };
+      dispatch(addUser(updatedProfile));
+      writeDataToFirestore(updatedProfile);
+      setShowPassword(true);
+      // dispatch(addUser(state));
+      navigation.navigate("Login");
+    } catch (error) {
+      throw error;
+    }
   };
 
   const getPassword = () => {
     if (state.password !== "") setShowPassword(false);
   };
 
-  // const addPhotoUser = async () => {
-  //   let { uri } = await ImagePicker.launchImageLibraryAsync({
-  //     mediaTypes: ImagePicker.MediaTypeOptions.Images,
-  //     allowsEditing: true,
-  //     aspect: [4, 3],
-  //     quality: 1,
-  //   });
-  //   setState((prevState) => ({ ...prevState, imageUser: uri }));
-  // };
-
-  const addPhotoUser = async () => {
-    const result =
-      await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.All,
-        allowsEditing: true,
-        aspect: [4, 3],
-        quality: 1,
-      });
-    if (!result.canceled) {
-      setImageUser(result.assets[0].uri);
-    }
-  };
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -202,7 +216,7 @@ export const RegistrationScreen = () => {
               </Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.btn}>
-              <Text style={styles.btnTitle} onPress={onData}>
+              <Text style={styles.btnTitle} onPress={uploadImageToServer}>
                 Зареєстуватися
               </Text>
             </TouchableOpacity>
