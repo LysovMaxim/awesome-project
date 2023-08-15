@@ -1,36 +1,36 @@
 import { View, StyleSheet, Text, TouchableOpacity, Image } from "react-native";
-import { Feather, Ionicons, AntDesign } from "@expo/vector-icons";
+import { Feather } from "@expo/vector-icons";
 import avatar from "../../src/pictures/avatart.png";
+import { signOut } from "../../redux/sliceAuth";
+import { useDispatch } from "react-redux";
+import { useNavigation } from "@react-navigation/native";
+import { useSelector } from 'react-redux';
 
 export const PostScreen = () => {
+  const dispatch = useDispatch();
+  const navigation = useNavigation();
+  const { login, email, imageUser } = useSelector((state) => state.auth);
+
+  const logout = () => {
+    dispatch(signOut());
+    navigation.navigate("Login");
+  };
+
   return (
     <>
       <View style={styles.header}>
         <Text style={styles.registr}>Публікації</Text>
-        <TouchableOpacity style={styles.logOut}>
+        <TouchableOpacity style={styles.logOut} onPress={logout}>
           <Feather name="log-out" size={24} color="#BDBDBD" />
         </TouchableOpacity>
       </View>
       <View style={styles.avatar}>
-        <View style={styles.avtarConteiner}>
-          <Image source={avatar} />
-        </View>
+        <Image style={styles.avtarConteiner} source={{uri : imageUser}}/>
         <View style={styles.avtarInfo}>
-          <Text style={styles.avtarName}>Natali Romanova</Text>
-          <Text style={styles.avtarEmail}>email@example.com</Text>
+          <Text style={styles.avtarName}>{login}</Text>
+          <Text style={styles.avtarEmail}>{email}</Text>
         </View>
       </View>
-      {/* <View style={styles.menu}>
-        <TouchableOpacity style={styles.grid}>
-          <Ionicons name="md-grid-outline" size={24} color="#212121" />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.plus}>
-          <AntDesign name="plus" size={24} color="#fff" />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.user}>
-          <Feather name="user" size={24} color="#212121" />
-        </TouchableOpacity>
-      </View> */}
     </>
   );
 };
@@ -48,6 +48,7 @@ const styles = StyleSheet.create({
     fontFamily: "Roboto-Medium",
     fontSize: 17,
     lineHeight: 22,
+  
   },
   logOut: {
     position: "absolute",
@@ -58,16 +59,20 @@ const styles = StyleSheet.create({
     marginTop: 32,
     marginLeft: 16,
     flexDirection: "row",
+    flexBasis: 60
+
   },
   avtarConteiner: {
     width: 60,
     heught: 60,
     borderRadius: 16,
     backgroundColor: "#F6F6F6",
+    
   },
   avtarInfo: {
     marginLeft: 8,
     justifyContent: "center",
+    
   },
   avtarName: {
     fontSize: 13,
@@ -78,26 +83,6 @@ const styles = StyleSheet.create({
     color: "#4d4d4d",
     fontSize: 11,
     fontFamily: "Roboto-Medium",
-
     fontWeight: 400,
   },
-  // menu: {
-  //   flexDirection: "row",
-  //   justifyContent: "center",
-  //   paddingTop: 9,
-  //   alignItems: "baseline",
-  //   gap: 39,
-  //   borderTopWidth: 1,
-  //   borderTopColor: "#b3b3b3",
-  //   top: 540,
-  //   height: 83,
-  // },
-  // plus: {
-  //   width: 70,
-  //   height: 40,
-  //   backgroundColor: "#FF6C00",
-  //   borderRadius: 100,
-  //   justifyContent: "center",
-  //   alignItems: "center",
-  // },
 });

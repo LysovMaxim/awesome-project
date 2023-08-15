@@ -1,15 +1,10 @@
-import { RegistrationScreen } from "./src/Screens/RegistrationScreen";
-import { LoginScreen } from "./src/Screens/LoginScreen";
-import { CommentsScreen } from "./src/Screens/CommentsScreen";
-import { Home } from "./src/Screens/Home";
-import { MapScreen } from "./src/Screens/MapScreen";
 import { useFonts } from "expo-font";
 import { useCallback } from "react";
 import "react-native-gesture-handler";
-import { NavigationContainer } from "@react-navigation/native";
-import { createStackNavigator } from "@react-navigation/stack";
-
-const MainStack = createStackNavigator();
+import { Provider } from "react-redux";
+import { persistor, store } from "./redux/store";
+import { PersistGate } from "redux-persist/integration/react";
+import { Main } from "./src/Components/Main";
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -26,35 +21,12 @@ export default function App() {
   if (!fontsLoaded) {
     return null;
   }
+
   return (
-    <NavigationContainer>
-      <MainStack.Navigator initialRouteName="Registration">
-        <MainStack.Screen
-          name="Registration"
-          options={{ headerShown: false }}
-          component={RegistrationScreen}
-        />
-        <MainStack.Screen
-          name="Login"
-          options={{ headerShown: false }}
-          component={LoginScreen}
-        />
-        <MainStack.Screen
-          name="Home"
-          options={{ headerShown: false }}
-          component={Home}
-        />
-        <MainStack.Screen
-          name="CommentsScreen"
-          options={{ headerShown: false }}
-          component={CommentsScreen}
-        />
-          <MainStack.Screen
-          name="MapScreen"
-          options={{ headerShown: false }}
-          component={MapScreen}
-        />
-      </MainStack.Navigator>
-    </NavigationContainer>
+    <Provider store={store}>
+      <PersistGate persistor={persistor}>
+        <Main />
+      </PersistGate>
+    </Provider>
   );
 }

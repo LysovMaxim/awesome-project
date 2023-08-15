@@ -14,6 +14,7 @@ import forest from "../pictures/forest.png";
 import sky from "../pictures/sky.png";
 import house from "../pictures/house.png";
 import { useNavigation } from "@react-navigation/native";
+import { useSelector } from 'react-redux';
 
 const POSTS = [
   {
@@ -56,6 +57,7 @@ const POSTS = [
 
 export const ProfileScreen = () => {
   const navigation = useNavigation();
+  const { login, imageUser } = useSelector((state) => state.auth);
 
   const goToCommentsScreen = () => {
     navigation.navigate("CommentsScreen");
@@ -84,16 +86,14 @@ export const ProfileScreen = () => {
       <Background />
       <View style={styles.container}>
         <View style={styles.registration}>
-          <View style={styles.photoUser}>
-            <Image source={avatarProfil} />
-          </View>
+          <Image style={styles.photoUser} source={{uri:imageUser}}/>
           <TouchableOpacity style={styles.btnPhotoClose}>
             <AntDesign name="close" size={13} color="#BDBDBD" />
           </TouchableOpacity>
           <TouchableOpacity style={styles.logOut}>
             <Feather name="log-out" size={24} color="#BDBDBD" />
           </TouchableOpacity>
-          <Text style={styles.nameUser}>Natali Romanova</Text>
+          <Text style={styles.nameUser}>{login}</Text>
           <ScrollView style={styles.scrollView}>
             {POSTS.map((post) => (
               <View key={post.id}>
