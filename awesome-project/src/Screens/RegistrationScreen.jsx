@@ -21,7 +21,7 @@ import { addUser } from "../../redux/sliceAuth";
 import * as ImagePicker from "expo-image-picker";
 import { writeDataToFirestore } from "../../firebase/frestore";
 import { ref, getDownloadURL, uploadBytes } from "firebase/storage";
-import {storage} from "../../firebase/config"
+import { storage } from "../../firebase/config";
 
 const initialState = {
   email: "",
@@ -48,8 +48,7 @@ export const RegistrationScreen = () => {
   const handleFocusPassword = () => setIsPassword(true);
   const handleBlurPassword = () => setIsPassword(false);
 
-
-    const addPhotoUser = async () => {
+  const addPhotoUser = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsEditing: true,
@@ -62,67 +61,62 @@ export const RegistrationScreen = () => {
   };
 
   const uploadImageToServer = async () => {
-
     if (imageUser) {
       try {
         const response = await fetch(imageUser);
 
         const file = await response.blob();
-        const uniquePostId = Date.now().toString()
+        const uniquePostId = Date.now().toString();
         const imageRef = ref(
           storage,
           `profileImageUser/${uniquePostId}/${file.data.name}`
         );
-        
+
         await uploadBytes(imageRef, file);
         const downloadeURL = await getDownloadURL(imageRef);
-        // setImageUser(downloadeURL);
-        setState({...state,imageUser: downloadeURL })
-        onData()
+        dispatch(onData({ ...state, imageUser: downloadeURL }));
       } catch (error) {
         console.warn("uploadImageToServer", error);
       }
     }
-  };
-
-  const onData = async () => {
-    await createUserWithEmailAndPassword(
-      auth,
-      state.email,
-      state.password
-      // state.imageUser
-    );
-    // console.log(imageUser)
-    try {
-      const user = await auth.currentUser;
-      await updateProfile(user, {
-        displayName: state.login,
-        photoURL: state.imageUser,
-      });
-      const { displayName, uid, photoURL } = user;
-      console.log(photoURL)
-      const updatedProfile = {
-        login: displayName,
-        userId: uid,
-        imageUser: photoURL,
-        password: state.password,
-        email: state.email,
-        userRegister: false,
-      };
-      dispatch(addUser(updatedProfile));
-      writeDataToFirestore(updatedProfile);
-      setShowPassword(true);
-      // dispatch(addUser(state));
-      navigation.navigate("Login");
-    } catch (error) {
-      throw error;
+    if (!imageUser) {
+       dispatch(onData(state));
     }
   };
+
+  const onData =
+    ({ email, password, login, imageUser }) =>
+    async () => {
+      await createUserWithEmailAndPassword(auth, email, password);
+      try {
+        const user = await auth.currentUser;
+        await updateProfile(user, {
+          displayName: login,
+          photoURL: imageUser,
+        });
+        const { displayName, uid, photoURL } = user;
+        console.log(photoURL);
+        const updatedProfile = {
+          login: displayName,
+          userId: uid,
+          imageUser: photoURL,
+          password: state.password,
+          email: state.email,
+          userRegister: false,
+        };
+        dispatch(addUser(updatedProfile));
+        writeDataToFirestore(updatedProfile);
+        setShowPassword(true);
+        // dispatch(addUser(state));
+        navigation.navigate("Login");
+      } catch (error) {
+        throw error;
+      }
+    };
 
   const getPassword = () => {
     if (state.password !== "") setShowPassword(false);
   };
-
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
