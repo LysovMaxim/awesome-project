@@ -12,8 +12,8 @@ import { useState, useEffect } from "react";
 import { Camera } from "expo-camera";
 import * as MediaLibrary from "expo-media-library";
 import * as Location from "expo-location";
-import { useSelector } from 'react-redux';
-import { writeDataToFirestorePost } from "../../firebase/frestore"
+import { useSelector } from "react-redux";
+import { writeDataToFirestorePost } from "../../firebase/frestore";
 import { ref, getDownloadURL, uploadBytes } from "firebase/storage";
 import { storage } from "../../firebase/config";
 
@@ -27,8 +27,6 @@ export const CreatePostsScreen = () => {
   const [isButtonDisabled, setIsButtonDisabled] = useState(true);
   const [namePost, setNamePost] = useState("");
   const { login, userId } = useSelector((state) => state.auth);
-  console.log(`привет => ${userId}`)
-  
 
   useEffect(() => {
     setIsButtonDisabled(checkButtonDisabled());
@@ -80,9 +78,11 @@ export const CreatePostsScreen = () => {
           locationTitle,
           namePost,
           login,
-          userId 
-        }
-        writeDataToFirestorePost(infoUser)
+          userId,
+          comments: 0,
+          likes:0,
+        };
+        writeDataToFirestorePost(infoUser);
       } catch (error) {
         console.warn("uploadImageToServer", error);
       }
@@ -188,6 +188,11 @@ const styles = StyleSheet.create({
   container: {
     width: 343,
     alignSelf: "center",
+  },
+  flipContainer: {
+    position: "absolute",
+    top: 40,
+    left: 10,
   },
   header: {
     height: 88,

@@ -21,6 +21,7 @@ const authSlice = createSlice({
         login: payload.login,
         imageUser: payload.imageUser,
         userRegister: payload.userRegister,
+        userId: payload.userId,
       });
     },
     loginUser: (state, { payload }) => {
@@ -28,6 +29,7 @@ const authSlice = createSlice({
         ...state,
         email: payload.email,
         password: payload.password,
+        userId: userId,
         userRegister: true,
       });
     },

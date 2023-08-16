@@ -30,6 +30,8 @@ export const writeDataToFirestorePost = async ({
   namePost,
   login,
   userId,
+  comments,
+  likes
 }) => {
   try {
     const docRef = await addDoc(collection(db, "posts"), {
@@ -39,6 +41,8 @@ export const writeDataToFirestorePost = async ({
       location: location,
       locationTitle: locationTitle,
       namePost: namePost,
+      comments: comments,
+      likes: likes,
     });
     console.log("Document written with ID: ", docRef.id);
   } catch (e) {

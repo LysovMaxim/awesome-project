@@ -9,59 +9,37 @@ import {
 } from "react-native";
 import { AntDesign, Ionicons, Feather } from "@expo/vector-icons";
 import Background from "../Components/Background";
-import avatarProfil from "../../src/pictures/avtar-profil.png";
-import forest from "../pictures/forest.png";
-import sky from "../pictures/sky.png";
-import house from "../pictures/house.png";
 import { useNavigation } from "@react-navigation/native";
 import { useSelector } from 'react-redux';
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "../../firebase/config";
+import { useEffect, useState } from "react";
 
-const POSTS = [
-  {
-    id: "1",
-    name: "Ліс",
-    photo: forest,
-    comments: "8",
-    like: "153",
-    location: "Ukraine",
-    data: {
-      latitude: 50.4547,
-      longitude: 30.5238,
-    },
-  },
-  {
-    id: "2",
-    name: "Захід на Чорному морі",
-    photo: sky,
-    comments: "3",
-    like: "200",
-    location: "Ukraine",
-    data: {
-      latitude: 50.4547,
-      longitude: 30.5238,
-    },
-  },
-  {
-    id: "3",
-    name: "Старий будиночок у Венеції",
-    photo: house,
-    comments: "50",
-    like: "200",
-    location: "Italy",
-    data: {
-      latitude: 47.083,
-      longitude: 12.183,
-    },
-  },
-];
 
 export const ProfileScreen = () => {
-  const navigation = useNavigation();
+  const [posts, setPosts] = useState([]);
   const { login, imageUser } = useSelector((state) => state.auth);
 
-  const goToCommentsScreen = () => {
-    navigation.navigate("CommentsScreen");
-  };
+  const navigation = useNavigation();
+  
+
+    useEffect(() => {
+    const getAllPost = async () => {
+      try {
+        const snapshot = await getDocs(collection(db, "posts"));
+        const postsData = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          data: doc.data(),
+        }));
+        setPosts(postsData);
+      } catch (error) {
+        console.log(error);
+        throw error;
+      }
+    };
+
+    getAllPost(posts);
+  }, []);
 
   const onMap = (data) => {
     if (!data) {
@@ -73,6 +51,10 @@ export const ProfileScreen = () => {
       longitude: data.longitude,
     });
   };
+
+      const onComment = (id, url) => { 
+        navigation.navigate('CommentsScreen', { postId: id, uri: url })
+    };
 
   return (
     <View
@@ -95,22 +77,22 @@ export const ProfileScreen = () => {
           </TouchableOpacity>
           <Text style={styles.nameUser}>{login}</Text>
           <ScrollView style={styles.scrollView}>
-            {POSTS.map((post) => (
+            {posts.map((post) => (
               <View key={post.id}>
-                <Image source={post.photo} />
-                <Text style={styles.namePost}>{post.name}</Text>
+                <Image style={styles.postPhoto} source={{ uri: post.data.photo}} />
+                <Text style={styles.namePost}>{post.data.namePost}</Text>
                 <View style={styles.informPost}>
-                  <TouchableOpacity onPress={goToCommentsScreen}>
+                  <TouchableOpacity onPress={() => onComment(post.id, post.data.photo)}>
                     <Ionicons name="chatbubble" size={24} color="#FF6C00" />
-                  </TouchableOpacity>
-                  <Text style={styles.comments}>{post.comments}</Text>
+                  </TouchableOpacity >
+                  <Text style={styles.comments}>{post.data.comments}</Text>
                   <TouchableOpacity>
                     <Feather name="thumbs-up" size={24} color="#FF6C00" />
                   </TouchableOpacity>
-                  <Text style={styles.like}>{post.like}</Text>
+                  <Text style={styles.like}>{post.data.likes}</Text>
                   <TouchableOpacity
                     style={styles.map}
-                    onPress={() => onMap(post.data)}
+                    onPress={() => onMap(post.data.location)}
                   >
                     <Feather
                       style={styles.iconMap}
@@ -118,7 +100,7 @@ export const ProfileScreen = () => {
                       size={24}
                       color="#BDBDBD"
                     />
-                    <Text style={styles.location}>{post.location}</Text>
+                    <Text style={styles.location}>{post.data.locationTitle}</Text>
                   </TouchableOpacity>
                 </View>
               </View>
@@ -196,6 +178,10 @@ const styles = StyleSheet.create({
     paddingLeft: 16,
     paddingRight: 16,
     alignSelf: "center",
+  },
+    postPhoto: {
+    width: 343,
+    height: 240,
   },
   namePost: {
     fontFamily: "Roboto-Medium",

@@ -12,7 +12,12 @@ import rectangle from "../pictures/rectangle.png";
 import ellipse from "../pictures/ellipse.png";
 import ellipse2 from "../pictures/ellipse2.png";
 import { useState } from "react";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
+import { useSelector } from "react-redux";
+import { doc, updateDoc, addDoc, collection, getDocs, increment } from "firebase/firestore";
+import { db } from '../../firebase/config';
+import { format } from 'date-fns';
+import { uk } from 'date-fns/locale';
 
 const COURSES = [
   {
@@ -44,7 +49,40 @@ const COURSES = [
 export const CommentsScreen = () => {
   const [courses, setCourses] = useState(COURSES);
 
+  [comment, setComment] = useState('');
+  const { imageUser,login } = useSelector((state) => state.auth);
+
   const navigation = useNavigation();
+
+  const { params } = useRoute();
+
+    const onPost = async () => {
+        try {
+            const postId = params && params.postId;
+            if (!postId) {
+                console.log('postId отсутствует в params');
+                return;
+            }
+
+            const postRef = doc(db, 'posts', postId);
+            const commentsCollectionRef = collection(postRef, 'comments');
+
+            await addDoc(commentsCollectionRef, {
+                login,
+                comment,
+                date: format(new Date(), 'dd MMMM, yyyy | HH:mm', { locale: uk }),
+            });
+
+            await updateDoc(postRef, {
+                comments: increment(1),
+            });
+            console.log("документ создан");
+        } catch (error) {
+            console.log(error);
+        }
+
+        setComment('');
+    };
 
   return (
     <>
@@ -56,7 +94,7 @@ export const CommentsScreen = () => {
       </View>
       <View style={styles.container}>
         <View style={styles.post}>
-          <Image source={rectangle} />
+          <Image source={{ uri: params.uri }} style={{ width: 343, height:240}}/>
         </View>
         <ScrollView style={styles.scrollView}>
           {courses.map((course) => (
@@ -105,8 +143,11 @@ export const CommentsScreen = () => {
             borderColor: "#E8E8E8",
           }}
           placeholder="Коментувати..."
+          value={comment}
+          onChangeText={setComment}
+              
         />
-        <TouchableOpacity style={styles.btnSend}>
+        <TouchableOpacity style={styles.btnSend} onPress={onPost}>
           <Feather name="arrow-up" size={24} color="#fff" />
         </TouchableOpacity>
       </View>
@@ -145,6 +186,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#F6F6F6",
     width: 343,
     alignSelf: "center",
+    
   },
   scrollView: {
     marginTop: 30,
