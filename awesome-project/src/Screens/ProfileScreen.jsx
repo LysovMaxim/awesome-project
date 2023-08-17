@@ -10,35 +10,26 @@ import {
 import { AntDesign, Ionicons, Feather } from "@expo/vector-icons";
 import Background from "../Components/Background";
 import { useNavigation } from "@react-navigation/native";
-import { useSelector } from 'react-redux';
-import { collection, getDocs } from "firebase/firestore";
+import { useSelector } from "react-redux";
 import { db } from "../../firebase/config";
 import { useEffect, useState } from "react";
-
+import { collection, onSnapshot, query, where } from "firebase/firestore";
 
 export const ProfileScreen = () => {
   const [posts, setPosts] = useState([]);
-  const { login, imageUser } = useSelector((state) => state.auth);
+  const { login, imageUser, userId } = useSelector((state) => state.auth);
 
   const navigation = useNavigation();
-  
 
-    useEffect(() => {
-    const getAllPost = async () => {
-      try {
-        const snapshot = await getDocs(collection(db, "posts"));
-        const postsData = snapshot.docs.map((doc) => ({
-          id: doc.id,
-          data: doc.data(),
-        }));
-        setPosts(postsData);
-      } catch (error) {
-        console.log(error);
-        throw error;
-      }
-    };
-
-    getAllPost(posts);
+  useEffect(() => {
+    const dbRef = query(collection(db, "posts"), where("userId", "==", userId));
+    onSnapshot(dbRef, (data) => {
+      const postsData = data.docs.map((doc) => ({
+        id: doc.id,
+        data: doc.data(),
+      }));
+      setPosts(postsData);
+    });
   }, []);
 
   const onMap = (data) => {
@@ -52,9 +43,9 @@ export const ProfileScreen = () => {
     });
   };
 
-      const onComment = (id, url) => { 
-        navigation.navigate('CommentsScreen', { postId: id, uri: url })
-    };
+  const onComment = (id, url) => {
+    navigation.navigate("CommentsScreen", { postId: id, uri: url });
+  };
 
   return (
     <View
@@ -68,7 +59,7 @@ export const ProfileScreen = () => {
       <Background />
       <View style={styles.container}>
         <View style={styles.registration}>
-          <Image style={styles.photoUser} source={{uri:imageUser}}/>
+          <Image style={styles.photoUser} source={{ uri: imageUser }} />
           <TouchableOpacity style={styles.btnPhotoClose}>
             <AntDesign name="close" size={13} color="#BDBDBD" />
           </TouchableOpacity>
@@ -79,12 +70,17 @@ export const ProfileScreen = () => {
           <ScrollView style={styles.scrollView}>
             {posts.map((post) => (
               <View key={post.id}>
-                <Image style={styles.postPhoto} source={{ uri: post.data.photo}} />
+                <Image
+                  style={styles.postPhoto}
+                  source={{ uri: post.data.photo }}
+                />
                 <Text style={styles.namePost}>{post.data.namePost}</Text>
                 <View style={styles.informPost}>
-                  <TouchableOpacity onPress={() => onComment(post.id, post.data.photo)}>
+                  <TouchableOpacity
+                    onPress={() => onComment(post.id, post.data.photo)}
+                  >
                     <Ionicons name="chatbubble" size={24} color="#FF6C00" />
-                  </TouchableOpacity >
+                  </TouchableOpacity>
                   <Text style={styles.comments}>{post.data.comments}</Text>
                   <TouchableOpacity>
                     <Feather name="thumbs-up" size={24} color="#FF6C00" />
@@ -100,7 +96,9 @@ export const ProfileScreen = () => {
                       size={24}
                       color="#BDBDBD"
                     />
-                    <Text style={styles.location}>{post.data.locationTitle}</Text>
+                    <Text style={styles.location}>
+                      {post.data.locationTitle}
+                    </Text>
                   </TouchableOpacity>
                 </View>
               </View>
@@ -179,7 +177,7 @@ const styles = StyleSheet.create({
     paddingRight: 16,
     alignSelf: "center",
   },
-    postPhoto: {
+  postPhoto: {
     width: 343,
     height: 240,
   },

@@ -11,9 +11,7 @@ import { useSelector } from "react-redux";
 const MainStack = createStackNavigator();
 
 export const Main = () => {
-
-  const userRegister = useSelector(state => state.auth.userRegister);
-
+  const userRegister = useSelector((state) => state.auth.userRegister);
 
   if (userRegister === false)
     return (
@@ -33,25 +31,26 @@ export const Main = () => {
       </NavigationContainer>
     );
 
-  if (userRegister === true) return (
-    <NavigationContainer>
-      <MainStack.Navigator initialRouteName="Home">
-        <MainStack.Screen
-          name="Home"
-          options={{ headerShown: false }}
-          component={Home}
-        />
-        <MainStack.Screen
-          name="CommentsScreen"
-          options={{ headerShown: false }}
-          component={CommentsScreen}
-        />
-        <MainStack.Screen
-          name="MapScreen"
-          options={{ headerShown: false }}
-          component={MapScreen}
-        />
-      </MainStack.Navigator>
-    </NavigationContainer>
-  );
+  if (userRegister === true)
+    return (
+      <NavigationContainer>
+        <MainStack.Navigator initialRouteName="Home">
+          <MainStack.Screen
+            name="Home"
+            options={{ headerShown: false }}
+            component={Home}
+          />
+          <MainStack.Screen
+            name="CommentsScreen"
+            options={{ headerShown: false }}
+            component={CommentsScreen}
+          />
+          <MainStack.Screen
+            name="MapScreen"
+            options={{ headerShown: false }}
+            component={MapScreen}
+          />
+        </MainStack.Navigator>
+      </NavigationContainer>
+    );
 };

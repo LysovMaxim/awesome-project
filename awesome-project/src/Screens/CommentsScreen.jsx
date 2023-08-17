@@ -11,50 +11,66 @@ import { AntDesign, Feather } from "@expo/vector-icons";
 import rectangle from "../pictures/rectangle.png";
 import ellipse from "../pictures/ellipse.png";
 import ellipse2 from "../pictures/ellipse2.png";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useSelector } from "react-redux";
-import { doc, updateDoc, addDoc, collection, getDocs, increment } from "firebase/firestore";
+import { doc, updateDoc, addDoc, collection, getDocs, increment, query, onSnapshot } from "firebase/firestore";
 import { db } from '../../firebase/config';
 import { format } from 'date-fns';
 import { uk } from 'date-fns/locale';
 
-const COURSES = [
-  {
-    id: "1",
-    photo: ellipse,
-    comment:
-      "Really love your most recent photo. I’ve been trying to capture the same thing for a few months and would love some tips!",
-    date: "09 червня 2020",
-    clock: "08:40",
-  },
-  {
-    id: "2",
-    photo: ellipse2,
-    comment:
-      "A fast 50mm like f1.8 would help with the bokeh. I’ve been using primes as they tend to get a bit sharper images.",
-    date: "09 червня 2020",
-    clock: "08:42",
-    autor: 1,
-  },
-  {
-    id: "3",
-    photo: ellipse,
-    comment: "Thank you! That was very helpful!",
-    date: "09 червня 2020",
-    clock: "08:44",
-  },
-];
+// const COURSES = [
+//   {
+//     id: "1",
+//     photo: ellipse,
+//     comment:
+//       "Really love your most recent photo. I’ve been trying to capture the same thing for a few months and would love some tips!",
+//     date: "09 червня 2020",
+//     clock: "08:40",
+//   },
+//   {
+//     id: "2",
+//     photo: ellipse2,
+//     comment:
+//       "A fast 50mm like f1.8 would help with the bokeh. I’ve been using primes as they tend to get a bit sharper images.",
+//     date: "09 червня 2020",
+//     clock: "08:42",
+//     autor: 1,
+//   },
+//   {
+//     id: "3",
+//     photo: ellipse,
+//     comment: "Thank you! That was very helpful!",
+//     date: "09 червня 2020",
+//     clock: "08:44",
+//   },
+// ];
 
 export const CommentsScreen = () => {
-  const [courses, setCourses] = useState(COURSES);
+  // const [courses, setCourses] = useState(COURSES);
+  const [comments, setComments] = useState([]);
 
   [comment, setComment] = useState('');
-  const { imageUser,login } = useSelector((state) => state.auth);
+  const { imageUser,login,userId } = useSelector((state) => state.auth);
 
   const navigation = useNavigation();
 
   const { params } = useRoute();
+
+    useEffect(() => {
+      
+       const postRef = doc(db, 'posts', params.postId);
+      const commentsCollectionRef = collection(postRef, 'comments');
+
+    onSnapshot(commentsCollectionRef, (data) => {
+      const commentsData = data.docs.map((doc) => ({
+        id: doc.id,
+        data: doc.data(),
+      }));
+      console.log(commentsData)
+      setComments(commentsData);
+    });
+  }, []);
 
     const onPost = async () => {
         try {
@@ -68,9 +84,11 @@ export const CommentsScreen = () => {
             const commentsCollectionRef = collection(postRef, 'comments');
 
             await addDoc(commentsCollectionRef, {
-                login,
-                comment,
-                date: format(new Date(), 'dd MMMM, yyyy | HH:mm', { locale: uk }),
+              login,
+              imageUser,
+              comment,
+              userId,
+              date: format(new Date(), 'dd MMMM, yyyy | HH:mm', { locale: uk }),
             });
 
             await updateDoc(postRef, {
@@ -97,39 +115,45 @@ export const CommentsScreen = () => {
           <Image source={{ uri: params.uri }} style={{ width: 343, height:240}}/>
         </View>
         <ScrollView style={styles.scrollView}>
-          {courses.map((course) => (
-            <View key={course.id}>
-              <View
-                style={{
-                  marginTop: 24,
-                  flexDirection: course.autor === 1 ? "row-reverse" : "row",
-                }}
-              >
-                <Image
+          {comments.length > 0 ? (
+            comments.map((comment) => (
+              <View key={comment.data.id}>
+                <View
                   style={{
-                    marginRight: course.autor === 1 ? 0 : 16,
-                    marginLeft: course.autor === 1 ? 16 : 0,
+                    marginTop: 24,
+                    flexDirection: userId === comment.data.userId ? "row-reverse" : "row",
                   }}
-                  source={course.photo}
-                />
-                <View style={styles.messageText}>
-                  <Text key={course.id}>{course.comment}</Text>
-                  <Text
+                >
+                  <Image
                     style={{
-                      marginTop: 8,
-                      color: "#BDBDBD",
-                      fontFamily: "Roboto-Regular",
-                      fontSize: 10,
-                      fontWeight: 400,
-                      left: course.autor === 1 ? 151 : null,
+                      marginRight: userId === comment.data.userId ? 0 : 16,
+                      marginLeft: userId === comment.data.userId ? 16 : 0,
+                      width: 28,
+                      height: 28,
+                      backgroundColor: "#F6F6F6",
+                      borderRadius: 50
                     }}
-                  >
-                    {course.date} | {course.clock}
-                  </Text>
+                    source={{ uri: comment.data.imageUser }}
+                  />
+                  <View style={styles.messageText}>
+                    <Text key={comment.id}>{comment.data.comment}</Text>
+                    <Text
+                      style={{
+                        marginTop: 8,
+                        color: "#BDBDBD",
+                        fontFamily: "Roboto-Regular",
+                        fontSize: 10,
+                        fontWeight: 400,
+                        left: userId === comment.data.userId ? 151 : null,
+                      }}
+                    >
+                      {comment.data.date}
+                    </Text>
+                  </View>
                 </View>
               </View>
-            </View>
-          ))}
+            ))
+          ):<Text>No comments yet</Text>}
         </ScrollView>
         <TextInput
           style={{
@@ -189,7 +213,8 @@ const styles = StyleSheet.create({
     
   },
   scrollView: {
-    marginTop: 30,
+    marginTop: 60,
+    height:328
   },
   messagePhoto: {
     marginRight: 16,

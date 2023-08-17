@@ -7,7 +7,13 @@ import { useSelector } from "react-redux";
 import { Ionicons } from "@expo/vector-icons";
 import { ScrollView } from "react-native";
 import { useEffect, useState } from "react";
-import { collection, getDocs } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  increment,
+  onSnapshot,
+  updateDoc,
+} from "firebase/firestore";
 import { db } from "../../firebase/config";
 
 export const PostScreen = () => {
@@ -22,10 +28,6 @@ export const PostScreen = () => {
     navigation.navigate("Login");
   };
 
-  const goToCommentsScreen = () => {
-    navigation.navigate("CommentsScreen");
-  };
-
   const onMap = (data) => {
     if (!data) {
       alert("not coords");
@@ -37,27 +39,27 @@ export const PostScreen = () => {
     });
   };
 
-  useEffect(() => {
-    const getAllPost = async () => {
-      try {
-        const snapshot = await getDocs(collection(db, "posts"));
-        const postsData = snapshot.docs.map((doc) => ({
-          id: doc.id,
-          data: doc.data(),
-        }));
-        setPosts(postsData);
-      } catch (error) {
-        console.log(error);
-        throw error;
-      }
-    };
+  const like = async (postId) => {
+    const postRef = doc(db, "posts", postId);
+    await updateDoc(postRef, {
+      likes: increment(1),
+    });
+  };
 
-    getAllPost(posts);
+  useEffect(() => {
+    const dbRef = collection(db, "posts");
+    onSnapshot(dbRef, (data) => {
+      const postsData = data.docs.map((doc) => ({
+        id: doc.id,
+        data: doc.data(),
+      }));
+      setPosts(postsData);
+    });
   }, []);
 
-      const onComment=(id, url)=> { 
-        navigation.navigate('CommentsScreen', { postId: id, uri: url })
-    };
+  const onComment = (id, url) => {
+    navigation.navigate("CommentsScreen", { postId: id, uri: url });
+  };
 
   return (
     <>
@@ -77,14 +79,16 @@ export const PostScreen = () => {
       <ScrollView style={styles.scrollView}>
         {posts.map((post) => (
           <View key={post.id}>
-            <Image style={styles.postPhoto} source={{ uri: post.data.photo}} />
+            <Image style={styles.postPhoto} source={{ uri: post.data.photo }} />
             <Text style={styles.namePost}>{post.data.namePost}</Text>
             <View style={styles.informPost}>
-              <TouchableOpacity onPress={() => onComment(post.id, post.data.photo)}>
+              <TouchableOpacity
+                onPress={() => onComment(post.id, post.data.photo)}
+              >
                 <Ionicons name="chatbubble" size={24} color="#BDBDBD" />
               </TouchableOpacity>
               <Text style={styles.comments}>{post.data.comments}</Text>
-              <TouchableOpacity>
+              <TouchableOpacity onPress={() => like(post.id)}>
                 <Feather name="thumbs-up" size={24} color="#BDBDBD" />
               </TouchableOpacity>
               <Text style={styles.like}>{post.data.likes}</Text>
@@ -135,7 +139,7 @@ const styles = StyleSheet.create({
   },
   avtarConteiner: {
     width: 60,
-    heught: 60,
+    height: 60,
     borderRadius: 16,
     backgroundColor: "#F6F6F6",
   },
@@ -161,7 +165,7 @@ const styles = StyleSheet.create({
   scrollView: {
     paddingLeft: 16,
     paddingRight: 16,
-    marginTop:20,
+    marginTop: 20,
     alignSelf: "center",
   },
   namePost: {

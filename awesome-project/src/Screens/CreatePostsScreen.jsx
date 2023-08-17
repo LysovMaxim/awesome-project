@@ -91,7 +91,6 @@ export const CreatePostsScreen = () => {
 
   const deleteState = () => {
     setNamePost("");
-    setLocation("");
     setLocationTitle("");
     setPhoto(null);
     setIsButtonDisabled(true);
