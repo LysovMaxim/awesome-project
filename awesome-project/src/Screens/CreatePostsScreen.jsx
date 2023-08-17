@@ -80,7 +80,7 @@ export const CreatePostsScreen = () => {
           login,
           userId,
           comments: 0,
-          likes:0,
+          likes: 0,
         };
         writeDataToFirestorePost(infoUser);
       } catch (error) {

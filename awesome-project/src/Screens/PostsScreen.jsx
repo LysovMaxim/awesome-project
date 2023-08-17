@@ -85,11 +85,19 @@ export const PostScreen = () => {
               <TouchableOpacity
                 onPress={() => onComment(post.id, post.data.photo)}
               >
-                <Ionicons name="chatbubble" size={24} color="#BDBDBD" />
+                {post.data.comments === 0 ? (
+                  <Ionicons name="chatbubble" size={24} color="#BDBDBD" />
+                ) : (
+                  <Ionicons name="chatbubble" size={24} color="#FF6C00" />
+                )}
               </TouchableOpacity>
               <Text style={styles.comments}>{post.data.comments}</Text>
               <TouchableOpacity onPress={() => like(post.id)}>
-                <Feather name="thumbs-up" size={24} color="#BDBDBD" />
+                {post.data.likes === 0 ? (
+                  <Feather name="thumbs-up" size={24} color="#BDBDBD" />
+                ) : (
+                  <Feather name="thumbs-up" size={24} color="#FF6C00" />
+                )}
               </TouchableOpacity>
               <Text style={styles.like}>{post.data.likes}</Text>
               <TouchableOpacity

@@ -8,111 +8,91 @@ import {
   TextInput,
 } from "react-native";
 import { AntDesign, Feather } from "@expo/vector-icons";
-import rectangle from "../pictures/rectangle.png";
-import ellipse from "../pictures/ellipse.png";
-import ellipse2 from "../pictures/ellipse2.png";
 import { useEffect, useState } from "react";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useSelector } from "react-redux";
-import { doc, updateDoc, addDoc, collection, getDocs, increment, query, onSnapshot } from "firebase/firestore";
-import { db } from '../../firebase/config';
-import { format } from 'date-fns';
-import { uk } from 'date-fns/locale';
-
-// const COURSES = [
-//   {
-//     id: "1",
-//     photo: ellipse,
-//     comment:
-//       "Really love your most recent photo. I’ve been trying to capture the same thing for a few months and would love some tips!",
-//     date: "09 червня 2020",
-//     clock: "08:40",
-//   },
-//   {
-//     id: "2",
-//     photo: ellipse2,
-//     comment:
-//       "A fast 50mm like f1.8 would help with the bokeh. I’ve been using primes as they tend to get a bit sharper images.",
-//     date: "09 червня 2020",
-//     clock: "08:42",
-//     autor: 1,
-//   },
-//   {
-//     id: "3",
-//     photo: ellipse,
-//     comment: "Thank you! That was very helpful!",
-//     date: "09 червня 2020",
-//     clock: "08:44",
-//   },
-// ];
+import {
+  doc,
+  updateDoc,
+  addDoc,
+  collection,
+  increment,
+  onSnapshot,
+} from "firebase/firestore";
+import { db } from "../../firebase/config";
+import { format } from "date-fns";
+import { uk } from "date-fns/locale";
 
 export const CommentsScreen = () => {
-  // const [courses, setCourses] = useState(COURSES);
   const [comments, setComments] = useState([]);
 
-  [comment, setComment] = useState('');
-  const { imageUser,login,userId } = useSelector((state) => state.auth);
+  [comment, setComment] = useState("");
+  const { imageUser, login, userId } = useSelector((state) => state.auth);
 
   const navigation = useNavigation();
 
   const { params } = useRoute();
 
-    useEffect(() => {
-      
-       const postRef = doc(db, 'posts', params.postId);
-      const commentsCollectionRef = collection(postRef, 'comments');
+  useEffect(() => {
+    const postRef = doc(db, "posts", params.postId);
+    const commentsCollectionRef = collection(postRef, "comments");
 
     onSnapshot(commentsCollectionRef, (data) => {
       const commentsData = data.docs.map((doc) => ({
         id: doc.id,
         data: doc.data(),
       }));
-      console.log(commentsData)
+      console.log(commentsData);
       setComments(commentsData);
     });
   }, []);
 
-    const onPost = async () => {
-        try {
-            const postId = params && params.postId;
-            if (!postId) {
-                console.log('postId отсутствует в params');
-                return;
-            }
+  const onPost = async () => {
+    try {
+      const postId = params && params.postId;
+      if (!postId) {
+        console.log("postId отсутствует в params");
+        return;
+      }
 
-            const postRef = doc(db, 'posts', postId);
-            const commentsCollectionRef = collection(postRef, 'comments');
+      const postRef = doc(db, "posts", postId);
+      const commentsCollectionRef = collection(postRef, "comments");
 
-            await addDoc(commentsCollectionRef, {
-              login,
-              imageUser,
-              comment,
-              userId,
-              date: format(new Date(), 'dd MMMM, yyyy | HH:mm', { locale: uk }),
-            });
+      await addDoc(commentsCollectionRef, {
+        login,
+        imageUser,
+        comment,
+        userId,
+        date: format(new Date(), "dd MMMM, yyyy | HH:mm", { locale: uk }),
+      });
 
-            await updateDoc(postRef, {
-                comments: increment(1),
-            });
-            console.log("документ создан");
-        } catch (error) {
-            console.log(error);
-        }
+      await updateDoc(postRef, {
+        comments: increment(1),
+      });
+    } catch (error) {
+      console.log(error);
+    }
 
-        setComment('');
-    };
+    setComment("");
+  };
 
   return (
     <>
       <View style={styles.header}>
         <Text style={styles.registr}>Коментарі</Text>
-        <TouchableOpacity style={styles.back} onPress={() => navigation.goBack()}>
+        <TouchableOpacity
+          style={styles.back}
+          onPress={() => navigation.goBack()}
+        >
           <AntDesign name="arrowleft" size={24} color="#BDBDBD" />
         </TouchableOpacity>
       </View>
       <View style={styles.container}>
         <View style={styles.post}>
-          <Image source={{ uri: params.uri }} style={{ width: 343, height:240}}/>
+          <Image
+            source={{ uri: params.uri }}
+            style={{ width: 343, height: 240 }}
+          />
         </View>
         <ScrollView style={styles.scrollView}>
           {comments.length > 0 ? (
@@ -121,7 +101,8 @@ export const CommentsScreen = () => {
                 <View
                   style={{
                     marginTop: 24,
-                    flexDirection: userId === comment.data.userId ? "row-reverse" : "row",
+                    flexDirection:
+                      userId === comment.data.userId ? "row-reverse" : "row",
                   }}
                 >
                   <Image
@@ -131,7 +112,7 @@ export const CommentsScreen = () => {
                       width: 28,
                       height: 28,
                       backgroundColor: "#F6F6F6",
-                      borderRadius: 50
+                      borderRadius: 50,
                     }}
                     source={{ uri: comment.data.imageUser }}
                   />
@@ -153,7 +134,9 @@ export const CommentsScreen = () => {
                 </View>
               </View>
             ))
-          ):<Text>No comments yet</Text>}
+          ) : (
+            <Text>No comments yet</Text>
+          )}
         </ScrollView>
         <TextInput
           style={{
@@ -169,7 +152,6 @@ export const CommentsScreen = () => {
           placeholder="Коментувати..."
           value={comment}
           onChangeText={setComment}
-              
         />
         <TouchableOpacity style={styles.btnSend} onPress={onPost}>
           <Feather name="arrow-up" size={24} color="#fff" />
@@ -210,11 +192,10 @@ const styles = StyleSheet.create({
     backgroundColor: "#F6F6F6",
     width: 343,
     alignSelf: "center",
-    
   },
   scrollView: {
     marginTop: 60,
-    height:328
+    height: 328,
   },
   messagePhoto: {
     marginRight: 16,

@@ -15,11 +15,10 @@ import { useNavigation } from "@react-navigation/native";
 import { auth } from "../../firebase/config";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { useDispatch } from "react-redux";
-import { getDataFromFirestore } from "../../firebase/frestore";
 import { addUser } from "../../redux/sliceAuth";
 
 const initialState = {
-  email:"",
+  email: "",
   password: "",
 };
 
@@ -29,8 +28,6 @@ export const LoginScreen = () => {
 
   const [isFocused, setIsFocused] = useState(false);
   const [isPassword, setIsPassword] = useState(false);
-  // const [email, setEmail] = useState("");
-  // const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(true);
 
   const [state, setState] = useState(initialState);
@@ -49,7 +46,6 @@ export const LoginScreen = () => {
       );
 
       const user = credentials.user;
-      // getDataFromFirestore(state);
       updateUserProfileWithPhotoURL(user);
       setShowPassword(true);
       navigation.navigate("Home");
@@ -68,9 +64,7 @@ export const LoginScreen = () => {
       password: state.password,
       userRegister: true,
     };
-    console.log(updatedProfile);
     dispatch(addUser(updatedProfile));
-    
   };
 
   const getPassword = () => {

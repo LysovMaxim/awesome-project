@@ -8,9 +8,10 @@ import {
   ScrollView,
 } from "react-native";
 import { AntDesign, Ionicons, Feather } from "@expo/vector-icons";
+import { signOut } from "../../redux/sliceAuth";
 import Background from "../Components/Background";
 import { useNavigation } from "@react-navigation/native";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { db } from "../../firebase/config";
 import { useEffect, useState } from "react";
 import { collection, onSnapshot, query, where } from "firebase/firestore";
@@ -20,6 +21,7 @@ export const ProfileScreen = () => {
   const { login, imageUser, userId } = useSelector((state) => state.auth);
 
   const navigation = useNavigation();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const dbRef = query(collection(db, "posts"), where("userId", "==", userId));
@@ -47,6 +49,11 @@ export const ProfileScreen = () => {
     navigation.navigate("CommentsScreen", { postId: id, uri: url });
   };
 
+    const logout = () => {
+    dispatch(signOut());
+    navigation.navigate("Login");
+  };
+
   return (
     <View
       style={{
@@ -63,7 +70,7 @@ export const ProfileScreen = () => {
           <TouchableOpacity style={styles.btnPhotoClose}>
             <AntDesign name="close" size={13} color="#BDBDBD" />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.logOut}>
+          <TouchableOpacity style={styles.logOut} onPress={logout}>
             <Feather name="log-out" size={24} color="#BDBDBD" />
           </TouchableOpacity>
           <Text style={styles.nameUser}>{login}</Text>

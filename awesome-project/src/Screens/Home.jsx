@@ -56,7 +56,7 @@ export const Home = () => {
         name="CreatePostsScreen"
         options={{
           headerShown: false,
-          tabBarStyle:{display:"none"}
+          tabBarStyle: { display: "none" },
         }}
         component={CreatePostsScreen}
       />

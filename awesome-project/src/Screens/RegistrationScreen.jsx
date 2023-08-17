@@ -80,7 +80,7 @@ export const RegistrationScreen = () => {
       }
     }
     if (!imageUser) {
-       dispatch(onData(state));
+      dispatch(onData(state));
     }
   };
 
@@ -107,7 +107,6 @@ export const RegistrationScreen = () => {
         dispatch(addUser(updatedProfile));
         writeDataToFirestore(updatedProfile);
         setShowPassword(true);
-        // dispatch(addUser(state));
         navigation.navigate("Login");
       } catch (error) {
         throw error;
