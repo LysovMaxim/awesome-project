@@ -6,6 +6,8 @@ import {
   Image,
   ScrollView,
   TextInput,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import { AntDesign, Feather } from "@expo/vector-icons";
 import { useEffect, useState } from "react";
@@ -88,74 +90,81 @@ export const CommentsScreen = () => {
         </TouchableOpacity>
       </View>
       <View style={styles.container}>
-        <View style={styles.post}>
-          <Image
-            source={{ uri: params.uri }}
-            style={{ width: 343, height: 240 }}
-          />
-        </View>
-        <ScrollView style={styles.scrollView}>
-          {comments.length > 0 ? (
-            comments.map((comment) => (
-              <View key={comment.data.id}>
-                <View
-                  style={{
-                    marginTop: 24,
-                    flexDirection:
-                      userId === comment.data.userId ? "row-reverse" : "row",
-                  }}
-                >
-                  <Image
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "height" : "height"}
+          keyboardVerticalOffset={Platform.select({ios: 100, android: 100})}
+        >
+          <View style={styles.post}>
+            <Image
+              source={{ uri: params.uri }}
+              style={{ width: 343, height: 240 }}
+            />
+          </View>
+          <ScrollView style={styles.scrollView}>
+            {comments.length > 0 ? (
+              comments.map((comment) => (
+                <View key={comment.data.id}>
+                  <View
                     style={{
-                      marginRight: userId === comment.data.userId ? 0 : 16,
-                      marginLeft: userId === comment.data.userId ? 16 : 0,
-                      width: 28,
-                      height: 28,
-                      backgroundColor: "#F6F6F6",
-                      borderRadius: 50,
+                      marginTop: 24,
+                      flexDirection:
+                        userId === comment.data.userId ? "row-reverse" : "row",
                     }}
-                    source={{ uri: comment.data.imageUser }}
-                  />
-                  <View style={styles.messageText}>
-                    <Text key={comment.id}>{comment.data.comment}</Text>
-                    <Text
+                  >
+                    <Image
                       style={{
-                        marginTop: 8,
-                        color: "#BDBDBD",
-                        fontFamily: "Roboto-Regular",
-                        fontSize: 10,
-                        fontWeight: 400,
-                        left: userId === comment.data.userId ? 151 : null,
+                        marginRight: userId === comment.data.userId ? 0 : 16,
+                        marginLeft: userId === comment.data.userId ? 16 : 0,
+                        width: 28,
+                        height: 28,
+                        backgroundColor: "#F6F6F6",
+                        borderRadius: 50,
                       }}
-                    >
-                      {comment.data.date}
-                    </Text>
+                      source={{ uri: comment.data.imageUser }}
+                    />
+                    <View style={styles.messageText}>
+                      <Text key={comment.id}>{comment.data.comment}</Text>
+                      <Text
+                        style={{
+                          marginTop: 8,
+                          color: "#BDBDBD",
+                          fontFamily: "Roboto-Regular",
+                          fontSize: 10,
+                          fontWeight: 400,
+                          left: userId === comment.data.userId ? 151 : null,
+                        }}
+                      >
+                        {comment.data.date}
+                      </Text>
+                    </View>
                   </View>
                 </View>
-              </View>
-            ))
-          ) : (
-            <Text>No comments yet</Text>
-          )}
-        </ScrollView>
-        <TextInput
-          style={{
-            marginTop: 16,
-            backgroundColor: "#F6F6F6",
-            borderWidth: 1,
-            borderRadius: 100,
-            width: "100%",
-            height: 50,
-            padding: 16,
-            borderColor: "#E8E8E8",
-          }}
-          placeholder="Коментувати..."
-          value={comment}
-          onChangeText={setComment}
-        />
-        <TouchableOpacity style={styles.btnSend} onPress={onPost}>
-          <Feather name="arrow-up" size={24} color="#fff" />
-        </TouchableOpacity>
+              ))
+            ) : (
+              <Text>No comments yet</Text>
+            )}
+          </ScrollView>
+          <View>
+            <TextInput
+              style={{
+                marginTop: 16,
+                backgroundColor: "#F6F6F6",
+                borderWidth: 1,
+                borderRadius: 100,
+                width: "100%",
+                height: 50,
+                padding: 16,
+                borderColor: "#E8E8E8",
+              }}
+              placeholder="Коментувати..."
+              value={comment}
+              onChangeText={setComment}
+            />
+            <TouchableOpacity style={styles.btnSend} onPress={onPost}>
+              <Feather name="arrow-up" size={24} color="#fff" />
+            </TouchableOpacity>
+          </View>
+        </KeyboardAvoidingView>
       </View>
     </>
   );
@@ -214,7 +223,7 @@ const styles = StyleSheet.create({
   btnSend: {
     alignItems: "center",
     justifyContent: "center",
-    top: 652,
+    top: 25,
     left: 300,
     position: "absolute",
     width: 34,
